@@ -12,9 +12,11 @@ if not _RELEASE:
     )
 else:
     parent_dir = os.path.dirname(os.path.abspath(__file__))
-    build_dir = os.path.join(parent_dir, "frontend/build")
-    _component_func = components.declare_component("streamlit_condition_tree", path=build_dir)
-
+    build_dir = os.path.join(parent_dir, "frontend", "build")
+    _component_func = components.declare_component(
+        "streamlit_condition_tree",
+        path=os.path.abspath(build_dir)  # Use absolute path
+    )
 type_mapper = {
     'b': 'boolean',
     'i': 'number',
@@ -43,13 +45,16 @@ class JsCode:
         """
         import re
         match_js_comment_expression = r"\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$"
-        js_code = re.sub(re.compile(match_js_comment_expression, re.MULTILINE), r"\1", js_code)
+        js_code = re.sub(re.compile(
+            match_js_comment_expression, re.MULTILINE), r"\1", js_code)
 
         match_js_spaces = r"\s+(?=(?:[^\'\"]*[\'\"][^\'\"]*[\'\"])*[^\'\"]*$)"
-        one_line_jscode = re.sub(match_js_spaces, " ", js_code, flags=re.MULTILINE)
+        one_line_jscode = re.sub(match_js_spaces, " ",
+                                 js_code, flags=re.MULTILINE)
 
         js_placeholder = "::JSCODE::"
-        one_line_jscode = re.sub(r"\s+|\r\s*|\n+", " ", js_code, flags=re.MULTILINE)
+        one_line_jscode = re.sub(
+            r"\s+|\r\s*|\n+", " ", js_code, flags=re.MULTILINE)
 
         self.js_code = f"{js_placeholder}{one_line_jscode}{js_placeholder}"
 
