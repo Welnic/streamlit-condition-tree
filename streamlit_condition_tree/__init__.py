@@ -2,6 +2,7 @@ import os
 
 import streamlit as st
 import streamlit.components.v1 as components
+import logging
 
 _RELEASE = True
 
@@ -11,8 +12,12 @@ if not _RELEASE:
         url="http://localhost:3001",
     )
 else:
+    logging.info(
+        "Loading frontend from streamlit-condition-tree/frontend/build")
     parent_dir = os.path.dirname(os.path.abspath(__file__))
+    logging.info(f"Loading frontend from {parent_dir}")
     build_dir = os.path.join(parent_dir, "frontend/build")
+    logging.info(f"Building frontend from {build_dir}")
     _component_func = components.declare_component(
         "streamlit_condition_tree", path=build_dir)
 
