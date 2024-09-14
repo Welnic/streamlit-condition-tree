@@ -12,11 +12,10 @@ if not _RELEASE:
     )
 else:
     parent_dir = os.path.dirname(os.path.abspath(__file__))
-    build_dir = os.path.join(parent_dir, "frontend", "build")
+    build_dir = os.path.join(parent_dir, "frontend/build")
     _component_func = components.declare_component(
-        "streamlit_condition_tree",
-        path=os.path.abspath(build_dir)  # Use absolute path
-    )
+        "streamlit_condition_tree", path=build_dir)
+
 type_mapper = {
     'b': 'boolean',
     'i': 'number',
