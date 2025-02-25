@@ -7,10 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setuptools.setup(
     name="streamlit-condition-tree",
-    version="0.3.0",
-    author="Cédric Villette",
-    author_email="cedric_villette@hotmail.fr",
-    version="0.2.1",
+    version="0.3.1",
     author="Catalina Melnic",
     author_email="catalina.melnic@snowfox.art",
     description="Condition Tree Builder for Streamlit",
@@ -36,5 +33,5 @@ setuptools.setup(
             "pytest-playwright-snapshot==1.0",
             "pytest-rerunfailures==12.0",
         ]
-    }
+    },
 )
