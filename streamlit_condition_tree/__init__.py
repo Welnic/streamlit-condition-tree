@@ -4,7 +4,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import logging
 
-_RELEASE = False
+_RELEASE = True
 
 if not _RELEASE:
     _component_func = components.declare_component(
@@ -12,27 +12,27 @@ if not _RELEASE:
         url="http://localhost:3001",
     )
 else:
-    logging.info(
-        "Loading frontend from streamlit-condition-tree/frontend/build")
+    logging.info("Loading frontend from streamlit-condition-tree/frontend/build")
     parent_dir = os.path.dirname(os.path.abspath(__file__))
     logging.info(f"Loading frontend from {parent_dir}")
     build_dir = os.path.join(parent_dir, "frontend/build")
     logging.info(f"Building frontend from {build_dir}")
     _component_func = components.declare_component(
-        "streamlit_condition_tree", path=build_dir)
+        "streamlit_condition_tree", path=build_dir
+    )
 
 type_mapper = {
-    'b': 'boolean',
-    'i': 'number',
-    'u': 'number',
-    'f': 'number',
-    'c': '',
-    'm': '',
-    'M': 'datetime',
-    'O': 'text',
-    'S': 'text',
-    'U': 'text',
-    'V': ''
+    "b": "boolean",
+    "i": "number",
+    "u": "number",
+    "f": "number",
+    "c": "",
+    "m": "",
+    "M": "datetime",
+    "O": "text",
+    "S": "text",
+    "U": "text",
+    "V": "",
 }
 
 
@@ -48,17 +48,17 @@ class JsCode:
             js_code (str): javascript function code as str
         """
         import re
+
         match_js_comment_expression = r"\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$"
-        js_code = re.sub(re.compile(
-            match_js_comment_expression, re.MULTILINE), r"\1", js_code)
+        js_code = re.sub(
+            re.compile(match_js_comment_expression, re.MULTILINE), r"\1", js_code
+        )
 
         match_js_spaces = r"\s+(?=(?:[^\'\"]*[\'\"][^\'\"]*[\'\"])*[^\'\"]*$)"
-        one_line_jscode = re.sub(match_js_spaces, " ",
-                                 js_code, flags=re.MULTILINE)
+        one_line_jscode = re.sub(match_js_spaces, " ", js_code, flags=re.MULTILINE)
 
         js_placeholder = "::JSCODE::"
-        one_line_jscode = re.sub(
-            r"\s+|\r\s*|\n+", " ", js_code, flags=re.MULTILINE)
+        one_line_jscode = re.sub(r"\s+|\r\s*|\n+", " ", js_code, flags=re.MULTILINE)
 
         self.js_code = f"{js_placeholder}{one_line_jscode}{js_placeholder}"
 
@@ -91,31 +91,29 @@ def config_from_dataframe(dataframe):
 
     fields = {}
     for col_name, col_dtype in zip(dataframe.columns, dataframe.dtypes):
-        col_type = 'select' if col_dtype == 'category' else type_mapper[col_dtype.kind]
+        col_type = "select" if col_dtype == "category" else type_mapper[col_dtype.kind]
 
         if col_type:
-            col_config = {
-                'label': col_name,
-                'type': col_type
-            }
-            if col_type == 'select':
+            col_config = {"label": col_name, "type": col_type}
+            if col_type == "select":
                 categories = dataframe[col_name].cat.categories
-                col_config['fieldSettings'] = {
-                    'listValues': [{'value': c, 'title': c} for c in categories]
+                col_config["fieldSettings"] = {
+                    "listValues": [{"value": c, "title": c} for c in categories]
                 }
-            fields[f'{col_name}'] = col_config
+            fields[f"{col_name}"] = col_config
 
-    return {'fields': fields}
+    return {"fields": fields}
 
 
-def condition_tree(config: dict,
-                   return_type: str = 'queryString',
-                   tree: dict = None,
-                   min_height: int = 400,
-                   placeholder: str = '',
-                   always_show_buttons: bool = True,
-                   key: str = None,
-                   ):
+def condition_tree(
+    config: dict,
+    return_type: str = "queryString",
+    tree: dict = None,
+    min_height: int = 400,
+    placeholder: str = "",
+    always_show_buttons: bool = True,
+    key: str = None,
+):
     """Create a new instance of condition_tree.
 
     Parameters
@@ -153,15 +151,15 @@ def condition_tree(config: dict,
 
     """
 
-    if return_type == 'queryString':
+    if return_type == "queryString":
         # Add backticks to fields having spaces in their name
         fields = {}
-        for field_name, field_config in config['fields'].items():
-            if ' ' in field_name:
-                field_name = f'`{field_name}`'
+        for field_name, field_config in config["fields"].items():
+            if " " in field_name:
+                field_name = f"`{field_name}`"
             fields[field_name] = field_config
 
-        config['fields'] = fields
+        config["fields"] = fields
 
     walk_config(config, lambda v: v.js_code if isinstance(v, JsCode) else v)
 
@@ -169,16 +167,16 @@ def condition_tree(config: dict,
         config=config,
         return_type=return_type,
         tree=tree,
-        key='_' + key if key else None,
+        key="_" + key if key else None,
         min_height=min_height,
         placeholder=placeholder,
         always_show_buttons=always_show_buttons,
-        default=['', ''],
+        default=["", ""],
     )
 
-    if return_type == 'queryString' and not component_value:
+    if return_type == "queryString" and not component_value:
         # Default string that applies no filter in DataFrame.query
-        component_value = 'index in index'
+        component_value = "index in index"
 
     st.session_state[key] = output_tree
 
